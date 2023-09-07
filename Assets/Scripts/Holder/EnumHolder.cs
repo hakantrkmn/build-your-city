@@ -6,7 +6,11 @@
     PauseLevel,
     ResetProgressData,
 }
-
+public enum MovementAxis
+{
+    x,
+    z,
+}
 public enum InGamePanelTypes
 {
     OnlyLevel,
