@@ -35,146 +35,159 @@ public class PuzzleController : MonoBehaviour
         movingCube.transform.position = puzzleIndex.position + Vector3.left * 5;
         puzzleIndex.localPosition += Vector3.up;
 
-        movingCube.Movement(currentAxis,5);
+        movingCube.Movement(currentAxis, 5);
+        EventManager.SetPuzzleCamera(puzzleCubes.Last().transform);
     }
 
+
+    public void CreateStackCube(Vector3 localScale, Vector3 localPosition)
+    {
+    }
 
     public void CalculateCut()
     {
         DOTween.Kill("movement");
         var referenceCube = puzzleCubes.Last();
-
+        var movingCubeTransform = movingCube.transform;
+        var referenceCubeTransform = referenceCube.transform;
         if (currentAxis == MovementAxis.x)
         {
-            var gap = movingCube.transform.position.x - referenceCube.transform.position.x;
+            var gap = movingCubeTransform.position.x - referenceCubeTransform.position.x;
+
             if (gap > 0)
             {
-                var newScale = new Vector3(Mathf.Abs((gap - referenceCube.transform.lossyScale.x)), 1,
-                    referenceCube.transform.lossyScale.z);
+                var stackCubeScale = new Vector3(Mathf.Abs((gap - referenceCubeTransform.lossyScale.x)), 1,
+                    referenceCubeTransform.lossyScale.z);
+                var stackCubeLocalPosition = new Vector3(referenceCubeTransform.localPosition.x, 0,
+                    0) + new Vector3(
+                    (movingCubeTransform.lossyScale.x / 2) - (Mathf.Abs(stackCubeScale.x) / 2),
+                    movingCubeTransform.localPosition.y, referenceCubeTransform.localPosition.z);
                 var stackCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
-                puzzleCubes.Add(stackCube);
-                stackCube.transform.localPosition = new Vector3(referenceCube.transform.localPosition.x, 0,
-                    0) + new Vector3(
-                    (movingCube.transform.lossyScale.x / 2) - (Mathf.Abs(newScale.x) / 2),
-                    movingCube.transform.localPosition.y, referenceCube.transform.localPosition.z);
 
-                stackCube.transform.localScale = newScale;
+                puzzleCubes.Add(stackCube);
+
+                stackCube.transform.localPosition = stackCubeLocalPosition;
+
+                stackCube.transform.localScale = stackCubeScale;
+
                 var dropCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
-                var dropCubeScale = new Vector3(movingCube.transform.lossyScale.x - newScale.x, 1,
-                    movingCube.transform.lossyScale.z);
-                dropCube.transform.localPosition = new Vector3(referenceCube.transform.localPosition.x, 0,
+                var dropCubeScale = new Vector3(movingCubeTransform.lossyScale.x - stackCubeScale.x, 1,
+                    movingCubeTransform.lossyScale.z);
+                dropCube.transform.localPosition = new Vector3(referenceCubeTransform.localPosition.x, 0,
                     0) + new Vector3(
-                    (movingCube.transform.lossyScale.x / 2) + (Mathf.Abs(dropCubeScale.x) / 2),
-                    movingCube.transform.localPosition.y, referenceCube.transform.localPosition.z);
+                    (movingCubeTransform.lossyScale.x / 2) + (Mathf.Abs(dropCubeScale.x) / 2),
+                    movingCubeTransform.localPosition.y, referenceCubeTransform.localPosition.z);
                 puzzleIndex.localPosition += Vector3.up;
                 dropCube.transform.localScale = dropCubeScale;
                 dropCube.AddComponent<Rigidbody>();
                 currentAxis = MovementAxis.z;
-                movingCube.transform.localScale = stackCube.transform.localScale;
-                movingCube.transform.localPosition = stackCube.transform.localPosition -
-                                                     new Vector3(0, -1,
-                                                         stackCube.transform.lossyScale.z/2 +
-                                                         movingCube.transform.lossyScale.z/2);
-                movingCube.Movement(currentAxis,stackCube.transform.lossyScale.z/2 +
-                                                movingCube.transform.lossyScale.z/2);
+                movingCubeTransform.localScale = stackCube.transform.localScale;
+                movingCubeTransform.localPosition = stackCube.transform.localPosition -
+                                                    new Vector3(0, -1,
+                                                        -(stackCube.transform.lossyScale.z / 2 +
+                                                          movingCubeTransform.lossyScale.z / 2));
+                movingCube.Movement(currentAxis, stackCube.transform.lossyScale.z / 2 +
+                                                 movingCubeTransform.lossyScale.z / 2);
             }
             else
             {
-                var newScale = new Vector3(Mathf.Abs((gap + referenceCube.transform.lossyScale.x)), 1,
-                    referenceCube.transform.lossyScale.z);
+                var stackCubeScale = new Vector3(Mathf.Abs((gap + referenceCubeTransform.lossyScale.x)), 1,
+                    referenceCubeTransform.lossyScale.z);
                 var stackCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
                 puzzleCubes.Add(stackCube);
-                stackCube.transform.localPosition = new Vector3(referenceCube.transform.localPosition.x, 0,
+                stackCube.transform.localPosition = new Vector3(referenceCubeTransform.localPosition.x, 0,
                     0) + new Vector3(
-                    -(movingCube.transform.lossyScale.x / 2) + (Mathf.Abs(newScale.x) / 2),
-                    movingCube.transform.localPosition.y, referenceCube.transform.localPosition.z);
-                stackCube.transform.localScale = newScale;
+                    -(movingCubeTransform.lossyScale.x / 2) + (Mathf.Abs(stackCubeScale.x) / 2),
+                    movingCubeTransform.localPosition.y, referenceCubeTransform.localPosition.z);
+                stackCube.transform.localScale = stackCubeScale;
                 var dropCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
-                var dropCubeScale = new Vector3(movingCube.transform.lossyScale.x - newScale.x, 1,
-                    movingCube.transform.lossyScale.z);
-                dropCube.transform.localPosition = new Vector3(referenceCube.transform.localPosition.x, 0,
+                var dropCubeScale = new Vector3(movingCubeTransform.lossyScale.x - stackCubeScale.x, 1,
+                    movingCubeTransform.lossyScale.z);
+                dropCube.transform.localPosition = new Vector3(referenceCubeTransform.localPosition.x, 0,
                     0) + new Vector3(
-                    -(movingCube.transform.lossyScale.x / 2) - (Mathf.Abs(dropCubeScale.x) / 2),
-                    movingCube.transform.localPosition.y, referenceCube.transform.localPosition.z);
+                    -(movingCubeTransform.lossyScale.x / 2) - (Mathf.Abs(dropCubeScale.x) / 2),
+                    movingCubeTransform.localPosition.y, referenceCubeTransform.localPosition.z);
                 puzzleIndex.localPosition += Vector3.up;
                 dropCube.transform.localScale = dropCubeScale;
                 dropCube.AddComponent<Rigidbody>();
                 currentAxis = MovementAxis.z;
-                movingCube.transform.localScale = stackCube.transform.localScale;
+                movingCubeTransform.localScale = stackCube.transform.localScale;
 
-                movingCube.transform.localPosition = stackCube.transform.localPosition -
-                                                     new Vector3(0, -1,
-                                                         stackCube.transform.lossyScale.z/2 +
-                                                         movingCube.transform.lossyScale.z/2);
-                movingCube.Movement(currentAxis,stackCube.transform.lossyScale.z/2 +
-                                                movingCube.transform.lossyScale.z/2);
+                movingCubeTransform.localPosition = stackCube.transform.localPosition -
+                                                    new Vector3(0, -1,
+                                                        -(stackCube.transform.lossyScale.z / 2 +
+                                                          movingCubeTransform.lossyScale.z / 2));
+                movingCube.Movement(currentAxis, stackCube.transform.lossyScale.z / 2 +
+                                                 movingCubeTransform.lossyScale.z / 2);
             }
         }
         else
         {
-            var gap = movingCube.transform.position.z - referenceCube.transform.position.z;
+            var gap = movingCubeTransform.position.z - referenceCubeTransform.position.z;
             if (gap > 0)
             {
-                var newScale = new Vector3(referenceCube.transform.lossyScale.x, 1,
-                    Mathf.Abs((gap - referenceCube.transform.lossyScale.z)));
+                var stackCubeScale = new Vector3(referenceCubeTransform.lossyScale.x, 1,
+                    Mathf.Abs((gap - referenceCubeTransform.lossyScale.z)));
                 var stackCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
                 puzzleCubes.Add(stackCube);
-                stackCube.transform.localPosition =new Vector3(0, 0,
-                    referenceCube.transform.localPosition.z)+ new Vector3(
-                    referenceCube.transform.localPosition.x, movingCube.transform.localPosition.y,
-                    (movingCube.transform.lossyScale.z / 2) - (Mathf.Abs(newScale.z) / 2));
-                stackCube.transform.localScale = newScale;
+                stackCube.transform.localPosition = new Vector3(0, 0,
+                    referenceCubeTransform.localPosition.z) + new Vector3(
+                    referenceCubeTransform.localPosition.x, movingCubeTransform.localPosition.y,
+                    (movingCubeTransform.lossyScale.z / 2) - (Mathf.Abs(stackCubeScale.z) / 2));
+                stackCube.transform.localScale = stackCubeScale;
                 var dropCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
-                var dropCubeScale = new Vector3(movingCube.transform.lossyScale.x, 1,
-                    movingCube.transform.lossyScale.z - newScale.z);
-                dropCube.transform.localPosition =new Vector3(0, 0,
-                    referenceCube.transform.localPosition.z)+ new Vector3(
-                    referenceCube.transform.localPosition.x, movingCube.transform.localPosition.y,
-                    (movingCube.transform.lossyScale.z / 2) + (Mathf.Abs(dropCubeScale.z) / 2));
+                var dropCubeScale = new Vector3(movingCubeTransform.lossyScale.x, 1,
+                    movingCubeTransform.lossyScale.z - stackCubeScale.z);
+                dropCube.transform.localPosition = new Vector3(0, 0,
+                    referenceCubeTransform.localPosition.z) + new Vector3(
+                    referenceCubeTransform.localPosition.x, movingCubeTransform.localPosition.y,
+                    (movingCubeTransform.lossyScale.z / 2) + (Mathf.Abs(dropCubeScale.z) / 2));
                 puzzleIndex.localPosition += Vector3.up;
                 dropCube.transform.localScale = dropCubeScale;
                 dropCube.AddComponent<Rigidbody>();
                 currentAxis = MovementAxis.x;
-                movingCube.transform.localScale = stackCube.transform.localScale;
+                movingCubeTransform.localScale = stackCube.transform.localScale;
 
-                movingCube.transform.localPosition = stackCube.transform.localPosition -
-                                                     new Vector3(stackCube.transform.lossyScale.x/2 +
-                                                                 movingCube.transform.lossyScale.x/2,-1,
-                                                         0);
-                movingCube.Movement(currentAxis,stackCube.transform.lossyScale.x/2 +
-                                                movingCube.transform.lossyScale.x/2);
+                movingCubeTransform.localPosition = stackCube.transform.localPosition -
+                                                    new Vector3(stackCube.transform.lossyScale.x / 2 +
+                                                                movingCubeTransform.lossyScale.x / 2, -1,
+                                                        0);
+                movingCube.Movement(currentAxis, stackCube.transform.lossyScale.x / 2 +
+                                                 movingCubeTransform.lossyScale.x / 2);
             }
             else
             {
-                var newScale = new Vector3(referenceCube.transform.lossyScale.x, 1,
-                    Mathf.Abs((gap + referenceCube.transform.lossyScale.z)));
+                var stackCubeScale = new Vector3(referenceCubeTransform.lossyScale.x, 1,
+                    Mathf.Abs((gap + referenceCubeTransform.lossyScale.z)));
                 var stackCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
                 puzzleCubes.Add(stackCube);
-                stackCube.transform.localPosition =new Vector3(0, 0,
-                    referenceCube.transform.localPosition.z)+ new Vector3(
-                    referenceCube.transform.localPosition.x, movingCube.transform.localPosition.y,
-                    -(movingCube.transform.lossyScale.z / 2) + (Mathf.Abs(newScale.z) / 2));
-                stackCube.transform.localScale = newScale;
+                stackCube.transform.localPosition = new Vector3(0, 0,
+                    referenceCubeTransform.localPosition.z) + new Vector3(
+                    referenceCubeTransform.localPosition.x, movingCubeTransform.localPosition.y,
+                    -(movingCubeTransform.lossyScale.z / 2) + (Mathf.Abs(stackCubeScale.z) / 2));
+                stackCube.transform.localScale = stackCubeScale;
                 var dropCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
-                var dropCubeScale = new Vector3(movingCube.transform.lossyScale.x, 1,
-                    movingCube.transform.lossyScale.z - newScale.z);
-                dropCube.transform.localPosition =new Vector3(0, 0,
-                    referenceCube.transform.localPosition.z)+ new Vector3(
-                    referenceCube.transform.localPosition.x, movingCube.transform.localPosition.y,
-                    -(movingCube.transform.lossyScale.z / 2) - (Mathf.Abs(dropCubeScale.z) / 2));
+                var dropCubeScale = new Vector3(movingCubeTransform.lossyScale.x, 1,
+                    movingCubeTransform.lossyScale.z - stackCubeScale.z);
+                dropCube.transform.localPosition = new Vector3(0, 0,
+                    referenceCubeTransform.localPosition.z) + new Vector3(
+                    referenceCubeTransform.localPosition.x, movingCubeTransform.localPosition.y,
+                    -(movingCubeTransform.lossyScale.z / 2) - (Mathf.Abs(dropCubeScale.z) / 2));
                 puzzleIndex.localPosition += Vector3.up;
                 dropCube.transform.localScale = dropCubeScale;
                 dropCube.AddComponent<Rigidbody>();
                 currentAxis = MovementAxis.x;
-                movingCube.transform.localScale = stackCube.transform.localScale;
-                movingCube.transform.localPosition = stackCube.transform.localPosition -
-                                                     new Vector3(stackCube.transform.lossyScale.x/2 +
-                                                                 movingCube.transform.lossyScale.x/2, -1,
-                                                         0);
-                movingCube.Movement(currentAxis,stackCube.transform.lossyScale.x/2 +
-                                                movingCube.transform.lossyScale.x/2);
+                movingCubeTransform.localScale = stackCube.transform.localScale;
+                movingCubeTransform.localPosition = stackCube.transform.localPosition -
+                                                    new Vector3(stackCube.transform.lossyScale.x / 2 +
+                                                                movingCubeTransform.lossyScale.x / 2, -1,
+                                                        0);
+                movingCube.Movement(currentAxis, stackCube.transform.lossyScale.x / 2 +
+                                                 movingCubeTransform.lossyScale.x / 2);
             }
         }
+
+        EventManager.SetPuzzleCamera(puzzleCubes.Last().transform);
     }
 
     private void Update()

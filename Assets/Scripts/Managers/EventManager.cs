@@ -18,7 +18,8 @@ public static class EventManager
 
   
 
- 
+    public static Action<Transform> SetPuzzleCamera;
+
 
 
 }
