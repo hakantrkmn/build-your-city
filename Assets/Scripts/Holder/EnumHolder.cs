@@ -11,6 +11,11 @@ public enum MovementAxis
     x,
     z,
 }
+public enum GameStates
+{
+    OnTerrain,
+    OnPuzzle,
+}
 public enum InGamePanelTypes
 {
     OnlyLevel,

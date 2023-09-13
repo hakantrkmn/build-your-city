@@ -19,6 +19,9 @@ public static class EventManager
   
 
     public static Action<Transform> SetPuzzleCamera;
+    public static Action<Transform> PuzzleDone;
+
+    public static Action<GridCell> CellSelected;
 
 
 

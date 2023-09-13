@@ -18,31 +18,45 @@ public class PuzzleController : MonoBehaviour
     public List<Cube> puzzleCubes;
 
     public Cube movingCube;
-    public Vector3 puzzleCubeScale;
+    public bool isPuzzleDone;
 
     public MovementAxis currentAxis;
+    
 
     [Button]
     public void CreatePuzzle()
     {
+        gradient = new Gradient();
+
+        // Blend color from red at 0% to blue at 100%
+        var colors = new GradientColorKey[2];
+        colors[0] = new GradientColorKey(Color.red, 0.0f);
+        colors[1] = new GradientColorKey(Color.blue, 1.0f);
+
+        // Blend alpha from opaque at 0% to transparent at 100%
+        var alphas = new GradientAlphaKey[2];
+        alphas[0] = new GradientAlphaKey(1.0f, 0.0f);
+        alphas[1] = new GradientAlphaKey(0.0f, 1.0f);
+
+        gradient.SetKeys(colors, alphas);
+        currentColor = gradient.Evaluate(colorTime);
+        
         var firstCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
         firstCube.transform.position = puzzleIndex.position;
         puzzleCubes.Add(firstCube);
         puzzleIndex.localPosition += Vector3.up;
-
+        firstCube.SetColor(currentColor);
+        colorTime += .1f;
+        currentColor = gradient.Evaluate(colorTime);
 
         movingCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
         movingCube.transform.position = puzzleIndex.position + Vector3.left * 5;
         puzzleIndex.localPosition += Vector3.up;
-
+        movingCube.SetColor(currentColor);
         movingCube.Movement(currentAxis, 5);
         EventManager.SetPuzzleCamera(puzzleCubes.Last().transform);
     }
-
-
-    public void CreateStackCube(Vector3 localScale, Vector3 localPosition)
-    {
-    }
+    
 
     public void CalculateCut()
     {
@@ -54,6 +68,16 @@ public class PuzzleController : MonoBehaviour
         {
             var gap = movingCubeTransform.position.x - referenceCubeTransform.position.x;
 
+            if (Mathf.Abs(gap)>referenceCubeTransform.lossyScale.x)
+            {
+                isPuzzleDone = true;
+
+                Debug.Log("çalışmaz");
+                movingCube.gameObject.SetActive(false);
+                EventManager.PuzzleDone(transform);
+                return;
+            }
+                
             if (gap > 0)
             {
                 var stackCubeScale = new Vector3(Mathf.Abs((gap - referenceCubeTransform.lossyScale.x)), 1,
@@ -63,7 +87,7 @@ public class PuzzleController : MonoBehaviour
                     (movingCubeTransform.lossyScale.x / 2) - (Mathf.Abs(stackCubeScale.x) / 2),
                     movingCubeTransform.localPosition.y, referenceCubeTransform.localPosition.z);
                 var stackCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
-
+                //stackCube.SetCube(referenceCube.transform, movingCube.transform, gap);
                 puzzleCubes.Add(stackCube);
 
                 stackCube.transform.localPosition = stackCubeLocalPosition;
@@ -80,6 +104,8 @@ public class PuzzleController : MonoBehaviour
                 puzzleIndex.localPosition += Vector3.up;
                 dropCube.transform.localScale = dropCubeScale;
                 dropCube.AddComponent<Rigidbody>();
+                dropCube.transform.DOScale(0, 2).OnComplete(() => Destroy(dropCube.gameObject));
+
                 currentAxis = MovementAxis.z;
                 movingCubeTransform.localScale = stackCube.transform.localScale;
                 movingCubeTransform.localPosition = stackCube.transform.localPosition -
@@ -110,6 +136,8 @@ public class PuzzleController : MonoBehaviour
                 puzzleIndex.localPosition += Vector3.up;
                 dropCube.transform.localScale = dropCubeScale;
                 dropCube.AddComponent<Rigidbody>();
+                dropCube.transform.DOScale(0, 2).OnComplete(() => Destroy(dropCube.gameObject));
+
                 currentAxis = MovementAxis.z;
                 movingCubeTransform.localScale = stackCube.transform.localScale;
 
@@ -123,7 +151,16 @@ public class PuzzleController : MonoBehaviour
         }
         else
         {
+            
             var gap = movingCubeTransform.position.z - referenceCubeTransform.position.z;
+            if (Mathf.Abs(gap)>referenceCubeTransform.lossyScale.z)
+            {
+                isPuzzleDone = true;
+                Debug.Log("çalışmaz");
+                movingCube.gameObject.SetActive(false);
+                EventManager.PuzzleDone(transform);
+                return;
+            }
             if (gap > 0)
             {
                 var stackCubeScale = new Vector3(referenceCubeTransform.lossyScale.x, 1,
@@ -148,6 +185,8 @@ public class PuzzleController : MonoBehaviour
                 currentAxis = MovementAxis.x;
                 movingCubeTransform.localScale = stackCube.transform.localScale;
 
+                dropCube.transform.DOScale(0, 2).OnComplete(() => Destroy(dropCube.gameObject));
+
                 movingCubeTransform.localPosition = stackCube.transform.localPosition -
                                                     new Vector3(stackCube.transform.lossyScale.x / 2 +
                                                                 movingCubeTransform.lossyScale.x / 2, -1,
@@ -167,6 +206,7 @@ public class PuzzleController : MonoBehaviour
                     -(movingCubeTransform.lossyScale.z / 2) + (Mathf.Abs(stackCubeScale.z) / 2));
                 stackCube.transform.localScale = stackCubeScale;
                 var dropCube = Instantiate(puzzleCubePrefab, puzzleParent).GetComponent<Cube>();
+                Destroy(dropCube.gameObject,2);
                 var dropCubeScale = new Vector3(movingCubeTransform.lossyScale.x, 1,
                     movingCubeTransform.lossyScale.z - stackCubeScale.z);
                 dropCube.transform.localPosition = new Vector3(0, 0,
@@ -176,6 +216,8 @@ public class PuzzleController : MonoBehaviour
                 puzzleIndex.localPosition += Vector3.up;
                 dropCube.transform.localScale = dropCubeScale;
                 dropCube.AddComponent<Rigidbody>();
+                dropCube.transform.DOScale(0, 2).OnComplete(() => Destroy(dropCube.gameObject));
+
                 currentAxis = MovementAxis.x;
                 movingCubeTransform.localScale = stackCube.transform.localScale;
                 movingCubeTransform.localPosition = stackCube.transform.localPosition -
@@ -186,15 +228,26 @@ public class PuzzleController : MonoBehaviour
                                                  movingCubeTransform.lossyScale.x / 2);
             }
         }
-
         EventManager.SetPuzzleCamera(puzzleCubes.Last().transform);
+    }
+
+    private Gradient gradient;
+    private Color currentColor;
+    private float colorTime;
+    private void Start()
+    {
+        
     }
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (GameManager.Instance.gameState == GameStates.OnPuzzle && !isPuzzleDone)
         {
-            CalculateCut();
+            if (Input.GetMouseButtonDown(0))
+            {
+                CalculateCut();
+            }
         }
+       
     }
 }
