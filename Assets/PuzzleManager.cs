@@ -25,7 +25,14 @@ public class PuzzleManager : MonoBehaviour
 
     private void PuzzleDone(Transform obj)
     {
-        obj.DOJump(selectedCell.transform.position, 2, 1, 1);
+        var tempCell = selectedCell;
+        obj.transform.parent = selectedCell.puzzleParent;
+        
+        obj.DOLocalJump(Vector3.zero, 2, 1, 1).OnComplete(() =>
+        {
+            tempCell.SavePuzzle(obj.GetComponent<PuzzleController>());
+        });
+        obj.DOLocalRotate(new Vector3(-90,0,0), 1);
         GameManager.Instance.gameState = GameStates.OnTerrain;
 
     }

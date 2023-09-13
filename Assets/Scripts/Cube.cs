@@ -11,7 +11,7 @@ public class Cube : MonoBehaviour
         GetComponent<Renderer>().material.color = color;
     }
 
-    public void SetCube(Transform referenceCubeTransform, Transform movingCubeTransform, float gap)
+    public void SetStackCube(Transform referenceCubeTransform, Transform movingCubeTransform, float gap)
     {
         var stackCubeScale = new Vector3(Mathf.Abs((gap - referenceCubeTransform.lossyScale.x)), 1,
             referenceCubeTransform.lossyScale.z);

@@ -10,6 +10,26 @@ public struct TutorialPanels
 }
 
 
+[Serializable]
+public struct TerrainGridData
+{
+    public List<CubeData> cubeDataList;
+}
+
+[Serializable]
+public struct CubeData
+{
+    public Vector3 position;
+    public Vector3 localScale;
+    public Color color;
+    public CubeData(Vector3 transformLocalScale,Vector3 position,Color color)
+    {
+        localScale = transformLocalScale;
+        this.position = position;
+        this.color = color;
+    }
+}
+
 #region Incremental Idle
 [Serializable]
 public class IncrementalIdleValues
