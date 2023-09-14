@@ -9,20 +9,24 @@ public struct TutorialPanels
     public GameObject panelGameObject;
 }
 
-
 [Serializable]
-public struct TerrainGridData
+public struct Terrains
 {
-    public List<CubeData> cubeDataList;
+    public List<TerrainGrid> terrain;
+}
+[Serializable]
+public struct TerrainGrid
+{
+    public List<TerrainCube> terrainGrids;
 }
 
 [Serializable]
-public struct CubeData
+public struct TerrainCube
 {
     public Vector3 position;
     public Vector3 localScale;
     public Color color;
-    public CubeData(Vector3 transformLocalScale,Vector3 position,Color color)
+    public TerrainCube(Vector3 transformLocalScale,Vector3 position,Color color)
     {
         localScale = transformLocalScale;
         this.position = position;

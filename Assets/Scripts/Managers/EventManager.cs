@@ -22,6 +22,8 @@ public static class EventManager
     public static Action<Transform> PuzzleDone;
 
     public static Action<GridCell> CellSelected;
+    public static Action CheckIfTerrainDone;
+    public static Action CurrentTerrainDone;
 
 
 
