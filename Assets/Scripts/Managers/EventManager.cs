@@ -17,13 +17,14 @@ public static class EventManager
     #endregion
 
   
+    public static Func<FloatingJoystick> GetJoystick;
 
     public static Action<Transform> SetPuzzleCamera;
     public static Action<Transform> PuzzleDone;
 
-    public static Action<GridCell> CellSelected;
-    public static Action CheckIfTerrainDone;
-    public static Action CurrentTerrainDone;
+    public static Action<Cell> CellSelected;
+    public static Action<Cell> CheckIfGridDone;
+    public static Action CurrentGridCompleted;
 
 
 

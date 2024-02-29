@@ -20,7 +20,7 @@ public class CameraManager : MonoBehaviour
         EventManager.CellSelected += CellSelected;
     }
 
-    private void CellSelected(GridCell obj)
+    private void CellSelected(Cell obj)
     {
         terrainCamera.Priority = 0;
         puzzleCamera.Priority = 10;

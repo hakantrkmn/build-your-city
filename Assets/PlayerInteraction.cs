@@ -6,17 +6,17 @@ public class PlayerInteraction : MonoBehaviour
 {
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<GridCell>())
+        if (other.GetComponent<Cell>())
         {
-            other.GetComponent<GridCell>().CanClickable(true);
+            other.GetComponent<Cell>().FadeInOutCanvas(true);
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.GetComponent<GridCell>())
+        if (other.GetComponent<Cell>())
         {
-            other.GetComponent<GridCell>().CanClickable(false);
+            other.GetComponent<Cell>().FadeInOutCanvas(false);
         }
         
     }

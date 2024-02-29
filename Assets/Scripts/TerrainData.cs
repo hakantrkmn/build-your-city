@@ -8,7 +8,7 @@ using UnityEngine;
 public class TerrainData : ScriptableObject
 {
     public List<Terrains> terrains;
-    public int currentTerrainIndex;
+    public int currentGridIndex;
 
     
     

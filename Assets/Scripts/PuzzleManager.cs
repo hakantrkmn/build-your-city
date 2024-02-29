@@ -8,7 +8,7 @@ using UnityEngine;
 public class PuzzleManager : MonoBehaviour
 {
     public PuzzleController puzzlePrefab;
-    public GridCell selectedCell;
+    public Cell selectedCell;
 
 
     private void OnEnable()
@@ -27,21 +27,21 @@ public class PuzzleManager : MonoBehaviour
     {
         var tempCell = selectedCell;
         obj.transform.parent = selectedCell.puzzleParent;
-        selectedCell.cellPuzzleDone = true;
+        selectedCell.isCellDone = true;
         obj.DOLocalJump(Vector3.zero, 2, 1, 1).OnComplete(() =>
         {
             tempCell.SavePuzzle(obj.GetComponent<PuzzleController>());
         });
         obj.DOLocalRotate(new Vector3(-90,0,0), 1);
         GameManager.Instance.gameState = GameStates.OnTerrain;
-        EventManager.CheckIfTerrainDone();
+        EventManager.CheckIfGridDone(selectedCell);
     }
 
-    private async void CellSelected(GridCell obj)
+    private async void CellSelected(Cell obj)
     {
         selectedCell = obj;
 
-        var puzzle = Instantiate(puzzlePrefab.gameObject, selectedCell.transform.position, Quaternion.identity)
+        var puzzle = Instantiate(puzzlePrefab.gameObject, selectedCell.transform.position + Vector3.up*5, Quaternion.identity)
             .GetComponent<PuzzleController>();
 
         puzzle.CreatePuzzle();

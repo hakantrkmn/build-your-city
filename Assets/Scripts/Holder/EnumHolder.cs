@@ -6,6 +6,13 @@
     PauseLevel,
     ResetProgressData,
 }
+
+public enum LockUnlockTypes
+{
+    Lock,
+    Unlock,
+}
+
 public enum MovementAxis
 {
     x,
