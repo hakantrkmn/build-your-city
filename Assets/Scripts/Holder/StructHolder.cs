@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 [Serializable]
 public struct TutorialPanels
@@ -10,23 +11,25 @@ public struct TutorialPanels
 }
 
 [Serializable]
-public struct Terrains
+public struct GridData
 {
-    public List<TerrainGrid> terrain;
-}
-[Serializable]
-public struct TerrainGrid
-{
-    public List<TerrainCube> terrainGrids;
+    public List<CellData> cells;
 }
 
 [Serializable]
-public struct TerrainCube
+public class CellData
+{
+    public List<CellCube> cubeInfo;
+    public bool isCompleted;
+}
+
+[Serializable]
+public struct CellCube
 {
     public Vector3 position;
     public Vector3 localScale;
     public Color color;
-    public TerrainCube(Vector3 transformLocalScale,Vector3 position,Color color)
+    public CellCube(Vector3 transformLocalScale,Vector3 position,Color color)
     {
         localScale = transformLocalScale;
         this.position = position;

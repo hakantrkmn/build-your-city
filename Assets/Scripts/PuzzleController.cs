@@ -23,7 +23,7 @@ public class PuzzleController : MonoBehaviour
 
     public MovementAxis currentAxis;
 
-    public void InitializeGradient()
+    void InitializeGradient()
     {
         gradient = new Gradient();
 
@@ -61,7 +61,7 @@ public class PuzzleController : MonoBehaviour
     }
 
 
-    public void CalculateCut()
+    void CalculateCut()
     {
         DOTween.Kill("movement");
         var referenceCube = puzzleCubes.Last();
@@ -115,9 +115,9 @@ public class PuzzleController : MonoBehaviour
 
             currentAxis = MovementAxis.z;
             movingCubeTransform.localScale = stackCube.transform.localScale;
-            movingCubeTransform.localPosition = stackCube.transform.localPosition -
-                                                new Vector3(0, -1,
-                                                    -(stackCube.transform.lossyScale.z / 2 +
+            movingCubeTransform.localPosition = stackCube.transform.localPosition +
+                                                new Vector3(0, 1,
+                                                    (stackCube.transform.lossyScale.z / 2 +
                                                       movingCubeTransform.lossyScale.z / 2));
             movingCube.Movement(currentAxis, stackCube.transform.lossyScale.z / 2 +
                                              movingCubeTransform.lossyScale.z / 2);
@@ -133,7 +133,6 @@ public class PuzzleController : MonoBehaviour
             if (Mathf.Abs(gap) > referenceCubeTransform.lossyScale.z)
             {
                 isPuzzleDone = true;
-                Debug.Log("çalışmaz");
                 movingCube.gameObject.SetActive(false);
                 EventManager.PuzzleDone(transform);
                 return;
@@ -182,10 +181,7 @@ public class PuzzleController : MonoBehaviour
     private Gradient gradient;
     private Color currentColor => gradient.Evaluate(colorTime);
     private float colorTime;
-
-    private void Start()
-    {
-    }
+    
 
     private void Update()
     {

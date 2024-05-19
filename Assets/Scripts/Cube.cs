@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class Cube : MonoBehaviour
 {
-
+    
+    
     public void SetColor(Color color)
     {
         GetComponent<Renderer>().material.color = color;
@@ -25,6 +26,8 @@ public class Cube : MonoBehaviour
 
     public void Movement(MovementAxis axis,float distance)
     {
+        var rand = Random.Range(0, 2);
+        
         distance++;
         distance *= 2;
         switch (axis)

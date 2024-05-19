@@ -3,27 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using Sirenix.OdinInspector;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [CreateAssetMenu]
 public class TerrainData : ScriptableObject
 {
-    public List<Terrains> terrains;
-    public int currentGridIndex;
+    public GridData grid;
 
-    
-    
 
     [Button]
     public void ClearData()
     {
-        foreach (var terrain in terrains)
-        {
-            foreach (var terr in terrain.terrain)
-            {
-                terr.terrainGrids.Clear();
-            }
-        }
+        grid.cells.Clear();
     }
+
     [Button]
     public void SaveData()
     {

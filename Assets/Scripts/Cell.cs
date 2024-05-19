@@ -10,69 +10,47 @@ public class Cell : MonoBehaviour
 {
     public GameObject cubeParent;
     public Transform puzzleParent;
-    public int index;
     public CanvasGroup canvasGroup;
-    public Image lockImage;
-    public TextMeshProUGUI buildText;
-    public LockUnlockTypes lockType;
+    public int index;
     public bool isCellDone;
-    private void OnMouseDown()
-    {
-        if (lockType==LockUnlockTypes.Unlock)
-        {
-            if (GameManager.Instance.gameState == GameStates.OnTerrain)
-            {
-                EventManager.CellSelected(this);
-            }
-        }
-    }
-
-    public void LockUnlockCell(LockUnlockTypes type)
-    {
-        lockType = type;
-        switch (lockType)
-        {
-            case LockUnlockTypes.Lock:
-                canvasGroup.alpha = 1;
-                buildText.gameObject.SetActive(false);
-                lockImage.gameObject.SetActive(true);
-                break;
-            case LockUnlockTypes.Unlock:
-                canvasGroup.alpha = 0;
-                buildText.gameObject.SetActive(true);
-                lockImage.gameObject.SetActive(false);
-                break;
-        }
-        
-    }
+    
 
     public void FadeInOutCanvas(bool canClick)
     {
-        if (lockType == LockUnlockTypes.Unlock)
-        {
+       
             canvasGroup.DOFade(canClick ? 1 : 0, .5f);
-        }
        
     }
 
+    public void LoadPuzzle()
+    {
+        var data = Scriptable.GetTerrainData().grid.cells[index];
+        if (!data.isCompleted) return;
+        CreatePuzzle(data.cubeInfo);
+
+       
+
+    }
+    
     public void SavePuzzle(PuzzleController puzzle)
     {
-        var data = Scriptable.GetTerrainData().terrains[GetComponentInParent<Grid>().index].terrain;
+        var data = Scriptable.GetTerrainData().grid;
         for (int i = 0; i < puzzle.puzzleCubes.Count; i++)
         {
             
-            data[index].terrainGrids.Add(new TerrainCube(puzzle.puzzleCubes[i].transform.localScale,
+            data.cells[index].cubeInfo.Add(new CellCube(puzzle.puzzleCubes[i].transform.localScale,
                 puzzle.puzzleCubes[i].transform.position,
                 puzzle.puzzleCubes[i].GetComponent<MeshRenderer>().material.color));
                 
         }
+
+        data.cells[index].isCompleted = true;
         SaveManager.SaveGameData(Scriptable.GetTerrainData());
 
     }
 
-    public void CreatePuzzle(List<TerrainCube> dataList)
+    public void CreatePuzzle(List<CellCube> dataList)
     {
-        lockType = LockUnlockTypes.Lock;
         isCellDone = true;
         for (int i = 0; i < dataList.Count; i++)
         {

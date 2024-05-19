@@ -28,12 +28,15 @@ public class PuzzleManager : MonoBehaviour
         var tempCell = selectedCell;
         obj.transform.parent = selectedCell.puzzleParent;
         selectedCell.isCellDone = true;
-        obj.DOLocalJump(Vector3.zero, 2, 1, 1).OnComplete(() =>
+        obj.DOLocalMove(Vector3.zero, 2).OnComplete(() =>
         {
             tempCell.SavePuzzle(obj.GetComponent<PuzzleController>());
         });
         obj.DOLocalRotate(new Vector3(-90,0,0), 1);
-        GameManager.Instance.gameState = GameStates.OnTerrain;
+        DOVirtual.DelayedCall(1, () =>
+        {
+            GameManager.Instance.gameState = GameStates.OnTerrain;
+        });
         EventManager.CheckIfGridDone(selectedCell);
     }
 
@@ -41,7 +44,7 @@ public class PuzzleManager : MonoBehaviour
     {
         selectedCell = obj;
 
-        var puzzle = Instantiate(puzzlePrefab.gameObject, selectedCell.transform.position + Vector3.up*5, Quaternion.identity)
+        var puzzle = Instantiate(puzzlePrefab.gameObject, selectedCell.transform.position + Vector3.up*15, Quaternion.identity)
             .GetComponent<PuzzleController>();
 
         puzzle.CreatePuzzle();
